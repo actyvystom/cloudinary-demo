@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import styled from "styled-components";
 
 export default function Home() {
@@ -12,6 +13,7 @@ export default function Home() {
 
       <Main>
         <h1>My App</h1>
+        <Link href="/upload">Image upload</Link>
       </Main>
     </div>
   );
