@@ -5,14 +5,14 @@ import formidable from "formidable";
 
 export const config = {
   api: {
-    bodyParser: false,
-  },
+    bodyParser: false
+  }
 };
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET,
+  api_secret: process.env.CLOUDINARY_SECRET
 });
 
 export default async function handler(request, response) {
@@ -27,7 +27,7 @@ export default async function handler(request, response) {
             const { file } = files;
             const { newFilename, filepath } = file;
             const result = await cloudinary.v2.uploader.upload(filepath, {
-              public_id: newFilename,
+              public_id: newFilename
             });
             console.log("API: response from cloudinary: ", result);
             response.status(201).json(result);

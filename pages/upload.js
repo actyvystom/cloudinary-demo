@@ -13,7 +13,7 @@ export default function Upload() {
     try {
       const response = await fetch("/api/upload", {
         method: "post",
-        body: formData,
+        body: formData
       });
       const img = await response.json();
 
@@ -34,6 +34,7 @@ export default function Upload() {
             layout="responsive"
             height={image.height}
             width={image.width}
+            alt="Uploaded image"
           />
         </ImageContainer>
       )}
