@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import styled from "styled-components";
-import Gallery from "../components/Gallery";
+import ImageList from "../components/ImageList";
 import ImageUploadForm from "../components/ImageUploadForm";
 export default function Home() {
   return (
@@ -14,7 +14,7 @@ export default function Home() {
 
       <Main>
         <h1>Cloudinary Demo</h1>
-        <Gallery />
+        <ImageList />
         <StyledUpload>
           <ImageUploadForm />
         </StyledUpload>

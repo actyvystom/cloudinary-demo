@@ -23,14 +23,24 @@ function ImageUploadForm() {
   }
 
   return (
-    <Form onSubmit={submitImage}>
-      <input type="file" name="file" />
-      <button type="submit">Upload</button>
-      <p>{uploadStatus}</p>
-    </Form>
+    <>
+      <h2>Image Upload</h2>
+      <Form onSubmit={submitImage}>
+        <input type="file" name="file" />
+        <StyledButton type="submit">Upload</StyledButton>
+        <p>{uploadStatus}</p>
+      </Form>
+    </>
   );
 }
 const Form = styled.form`
   margin: 2rem auto;
+`;
+const StyledButton = styled.button`
+  background-color: green;
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.25rem 1rem;
+  color: white;
 `;
 export default ImageUploadForm;
