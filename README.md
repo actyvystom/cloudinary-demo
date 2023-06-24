@@ -8,16 +8,25 @@
    1. CLOUDINARY_SECRET=<your_secret>
    2. CLOUDINARY_API_KEY=<your_api_key>
    3. CLOUDINARY_CLOUD_NAME=<cloud_name>
+4. Add the following entry to your `next.config.js`:
 
-### needed npm packages
+```js
+...
+images: {
+    domains: ["res.cloudinary.com"],
+  },
+...
+```
 
-`npm i cloudinary formidable`
+### Needed npm packages
+
+`npm i cloudinary formidable swr`
 
 ## API GET route for images
 
 The Cloudinary Media Library already contains some default images, so we can start creating a first API route to retrieve them and test if our setup is working:
 
-- add a new API route file `images.js` and implement a config:
+- add a new API route `images/index.js` and implement the cloudinary config:
 
 ```js
 import process from "node:process";
