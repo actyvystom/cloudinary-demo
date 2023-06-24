@@ -18,8 +18,8 @@ export default function Gallery() {
           />
           <p>
             {image.tags.length > 0 ? (
-              image.tags.map((index, tag) => (
-                <span key={`pic-${index}`}>{image.tags[tag]}</span>
+              image.tags.map((tag, index) => (
+                <span key={`pic-${index}`}>{tag}</span>
               ))
             ) : (
               <i>untagged</i>
