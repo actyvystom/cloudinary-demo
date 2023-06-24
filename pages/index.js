@@ -1,8 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import styled from "styled-components";
-import Gallery from "../components/Gallery";
-import ImageUploadForm from "../components/ImageUploadForm";
+
 export default function Home() {
   return (
     <div>
@@ -14,10 +13,6 @@ export default function Home() {
 
       <Main>
         <h1>Cloudinary Demo</h1>
-        <Gallery />
-        <StyledUpload>
-          <ImageUploadForm />
-        </StyledUpload>
       </Main>
     </div>
   );
@@ -25,10 +20,4 @@ export default function Home() {
 
 const Main = styled.main`
   text-align: center;
-`;
-const StyledUpload = styled.div`
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  padding: 4rem;
 `;
