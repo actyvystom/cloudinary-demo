@@ -10,16 +10,18 @@ export default function ImageList() {
     <StyledList>
       {data.resources.map((image) => (
         <StyledListItem key={image.asset_id}>
-          <Link href={`/images/${image.public_id}`}>
-            <Image
-              key={image.public_id}
-              src={image.url}
-              layout="responsive"
-              height={image.height}
-              width={image.width}
-              style={{ borderRadius: "0.5rem", borderColor: "black" }}
-              alt={`Image-Id: ${image.public_id}`}
-            />
+          <Link href={`/images/${image.public_id}`} key={image.asset_id}>
+            <a>
+              <Image
+                key={image.public_id}
+                src={image.url}
+                layout="responsive"
+                height={image.height}
+                width={image.width}
+                style={{ borderRadius: "0.5rem", borderColor: "black" }}
+                alt={`Image-Id: ${image.public_id}`}
+              />
+            </a>
           </Link>
           <p>
             {image.tags.length > 0 ? (
