@@ -25,6 +25,7 @@ export default async function handler(request, response) {
             reject(error);
           } else {
             const { file } = files;
+
             const { newFilename, filepath } = file;
             const result = await cloudinary.v2.uploader.upload(filepath, {
               public_id: newFilename

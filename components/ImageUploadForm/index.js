@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useSWRConfig } from "swr";
+import useSWR from "swr";
 function ImageUploadForm() {
-  const { mutate } = useSWRConfig();
-  const [uploadStatus, setUploadStatus] = useState("");
+  const { mutate } = useSWR("/api/images/");
+  const [uploadStatus, setUploadStatus] = useState(false);
+  const [error, setError] = useState(undefined);
   async function submitImage(event) {
     event.preventDefault();
     setUploadStatus("Uploading...");
@@ -14,9 +15,10 @@ function ImageUploadForm() {
         method: "post",
         body: formData
       });
-      const img = await response.json();
-      setUploadStatus("Uploaded!");
-      mutate("/api/images");
+      if (response.status === 201) {
+        mutate();
+        setUploadStatus("Upload complete!");
+      }
     } catch (error) {
       setError(error);
     }
@@ -29,6 +31,7 @@ function ImageUploadForm() {
         <input type="file" name="file" />
         <StyledButton type="submit">Upload</StyledButton>
         <p>{uploadStatus}</p>
+        {error && <p>{error.message}</p>}
       </Form>
     </>
   );
