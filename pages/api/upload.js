@@ -15,30 +15,22 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET
 });
 
-export default async function handler(request, response) {
-  switch (request.method) {
-    case "POST":
-      await new Promise((resolve, reject) => {
-        const form = formidable({});
-        form.parse(request, async (error, fields, files) => {
-          if (error) {
-            reject(error);
-          } else {
-            const { file } = files;
-
-            const { newFilename, filepath } = file;
-            const result = await cloudinary.v2.uploader.upload(filepath, {
-              public_id: newFilename
-            });
-            console.log("API: response from cloudinary: ", result);
-            response.status(201).json(result);
-            resolve();
-          }
-        });
-      });
-      break;
-    default:
-      response.status(400).json({ message: "Method not implemented" });
-      break;
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
+
+  const form = formidable({});
+  form.parse(req, async (error, fields, files) => {
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    const { file } = files;
+    const { newFilename, filepath } = file[0];
+    const result = await cloudinary.v2.uploader.upload(filepath, {
+      public_id: newFilename
+    });
+    console.log("API: response from cloudinary: ", result);
+    return res.status(201).json(result);
+  });
 }
