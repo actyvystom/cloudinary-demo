@@ -11,17 +11,13 @@ export default function ImageList() {
       {data.resources.map((image) => (
         <StyledListItem key={image.asset_id}>
           <Link href={`/images/${image.public_id}`} key={image.asset_id}>
-            <a>
-              <Image
-                key={image.public_id}
-                src={image.url}
-                layout="responsive"
-                height={image.height}
-                width={image.width}
-                style={{ borderRadius: "0.5rem", borderColor: "black" }}
-                alt={`Image-Id: ${image.public_id}`}
-              />
-            </a>
+            <StyledImage
+              key={image.public_id}
+              src={image.url}
+              width={image.width}
+              height={image.height}
+              alt={`Image-Id: ${image.public_id}`}
+            />
           </Link>
           <p>
             {image.tags.length > 0 ? (
@@ -46,12 +42,22 @@ export const StyledTag = styled.span`
 const StyledList = styled.ul`
   list-style: none;
   padding: 0;
+  width: 100vw;
+  height: auto;
 `;
 const StyledListItem = styled.li`
+  display: flex;
   margin-bottom: 2rem;
   border-bottom: 1px solid #ccc;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
 `;
-const StyledImage = styled.image`
+const StyledImage = styled(Image)`
   border-radius: 0.5rem;
+  width: 90vw;
+  object-fit: contain;
+  height: auto;
   border-color: aliceblue;
 `;

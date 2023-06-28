@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Link from "next/link";
 import styled from "styled-components";
 import ImageList from "../components/ImageList";
 import ImageUploadForm from "../components/ImageUploadForm";
@@ -25,9 +24,18 @@ export default function Home() {
 
 const Main = styled.main`
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `;
 const StyledUpload = styled.div`
-  width: 100%;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
   border: 1px solid #ccc;
   border-radius: 0.5rem;
   padding: 4rem;
