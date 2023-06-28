@@ -1,3 +1,5 @@
+:exclamation: This demo uses an older Next.js version (12.3.1)
+
 # Integrating cloudinary image upload and displaying images
 
 ## Setup
@@ -331,3 +333,14 @@ const StyledUpload = styled.div`
   padding: 4rem;
 `;
 ```
+
+---
+
+## Links & Resources
+
+- [Node.js Backend SDK used in this Demo](https://cloudinary.com/documentation/node_integration)
+- [Search API Examples](https://cloudinary.com/documentation/search_api#examples)
+- :exclamation: We did not use this directly, but for reference [Upload API Docs](https://cloudinary.com/documentation/image_upload_api_reference)
+- [All backend SDKs](https://cloudinary.com/documentation/backend_sdks)
+- [Frontend SDKs](https://cloudinary.com/documentation/frontend_sdks)
+- [Next.js SDK](https://next-cloudinary.spacejelly.dev/)
