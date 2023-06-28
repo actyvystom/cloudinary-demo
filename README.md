@@ -1,4 +1,4 @@
-:exclamation: This demo uses an older Next.js version (12.3.1)
+<small>This demo uses Next.js version (13.2.3) and latest formidable (3.4.0)</small>
 
 # Integrating cloudinary image upload and displaying images
 
@@ -164,41 +164,32 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_SECRET
 });
-// define our async handler function
-export default async function handler(request, response) {
-  // we only look for POST request method
-  switch (request.method) {
-    case "POST":
-      // we wrap our POST data handling in a Promise to support correct handling of our async method
-      await new Promise((resolve, reject) => {
-        // initializing a new (empty) formidable form which we use to
-        const form = formidable({});
-        // parse our request in order to get adequate values for our file to upload
-        form.parse(request, async (error, fields, files) => {
-          if (error) {
-            // in case of error, the promise rejects (resulting in an error catched in our upload form)
-            reject(error);
-          } else {
-            // formidable offers us a handy way to get the file data exactly how we need it to pass it to the cloudinary upload API
-            const { file } = files;
-            // newFilename is a temporary filename like e.g. "de49ea6ae2b56c0208f640300"
-            const { newFilename, filepath } = file;
-            // finally we call the cloudinary upload API with our values and pass the temporary filename as public_id
-            const result = await cloudinary.v2.uploader.upload(filepath, {
-              public_id: newFilename
-            });
-            console.log("API: response from cloudinary: ", result);
-            response.status(201).json(result);
-            // As our request is successful, we call the promises' resolve()-method (fulfilling the try block in our upload form handler)
-            resolve();
-          }
-        });
-      });
-      break;
-    default:
-      response.status(400).json({ message: "Method not implemented" });
-      break;
+// define our async handler function - simplified :)
+export default async function handler(req, res) {
+  // we check for POST, all methods return 405
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
+
+  const form = formidable({});
+  // using formidables' parse method to get a simple access to the file data
+  form.parse(req, async (error, fields, files) => {
+    // return an error status if parsing fails
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    // deconstruct our file from files data, will return an array with one element
+    const { file } = files;
+    // deconstruct the needed values from our file object at index 0
+    const { newFilename, filepath } = file[0];
+    // call our cloudinary uploader with the required arguments
+    const result = await cloudinary.v2.uploader.upload(filepath, {
+      public_id: newFilename
+    });
+    console.log("API: response from cloudinary: ", result);
+    // return our just uploaded image result from cloudinary upload
+    return res.status(201).json(result);
+  });
 }
 ```
 
