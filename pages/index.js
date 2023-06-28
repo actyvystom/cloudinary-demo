@@ -1,7 +1,8 @@
 import Head from "next/head";
 import Link from "next/link";
 import styled from "styled-components";
-
+import ImageList from "../components/ImageList";
+import ImageUploadForm from "../components/ImageUploadForm";
 export default function Home() {
   return (
     <div>
@@ -13,6 +14,8 @@ export default function Home() {
 
       <Main>
         <h1>Cloudinary Demo</h1>
+        <ImageUploadForm />
+        <ImageList />
       </Main>
     </div>
   );
