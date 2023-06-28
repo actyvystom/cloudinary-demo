@@ -3,12 +3,12 @@
 ## Setup
 
 1. create a free account at [cloudinary.com](https://cloudinary.com)
-2. Add an `.env.local` file (if not already present for your database)
-3. Add the following environment variables with corresponding values from your cloudinary profile:
+2. Add an `.env.local` file (if not already present for your database connection string)
+3. Add the following environment variables with corresponding values from your cloudinary profile (see Product Environment Credentials on your dashboard at [cloudinary console](https://console.cloudinary.com/console) to get the values):
    1. CLOUDINARY_SECRET=<your_secret>
    2. CLOUDINARY_API_KEY=<your_api_key>
    3. CLOUDINARY_CLOUD_NAME=<cloud_name>
-4. Add the following entry to your `next.config.js`:
+4. Add the following entry to your `next.config.js` to allow Next.js to display images from cloudinary:
 
 ```js
 ...
@@ -20,24 +20,28 @@ images: {
 
 ### Needed npm packages
 
+- Install the following npm packages (formidable version number is important!):
+
 `npm i cloudinary formidable@2.0.1 swr`
 
 ## API GET route for images
 
 The Cloudinary Media Library already contains some default images, so we can start creating a first API route to retrieve them and test if our setup is working:
 
-- add a new API route `images/index.js` and implement the cloudinary config:
+- add a new API route `api/images/index.js` and implement the route:
 
 ```js
+// needed to read the .env variables
 import process from "node:process";
 import cloudinary from "cloudinary";
 
+// as the default setting of Next.js API is using the bodyParser, we need to deactivate it by setting its config
 export const config = {
   api: {
     bodyParser: false
   }
 };
-
+// set the cloudinary config to use your environment variables
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -45,17 +49,19 @@ cloudinary.config({
 });
 ```
 
-- add the handler:
+- add the handler for the api route:
 
 ```js
 export default async function handler(request, response) {
   if (request.method === "GET") {
     try {
+      // we use cloudinary search API to retrieve images
       const result = await cloudinary.v2.search
         // see documentation to adjust the query at https://cloudinary.com/documentation/search_api#examples
         .with_field("tags")
         .max_results(10)
         .execute();
+      // finally we deliver the response with the result as JSON
       response.status(200).json(result);
     } catch (error) {
       response.status(500).json({ message: error.message });
@@ -70,22 +76,27 @@ export default async function handler(request, response) {
 
 - Create a new component in `components/ImageList/index.js`
 
-- Some sample code:
+- Create your component basically like this:
 
 ```js
 import useSWR from "swr";
+// we want to use the next Image component to display our cloudinary images
 import Image from "next/image";
 import styled from "styled-components";
+// When setting up a detail page use the Next Link component to add the Linking
 import Link from "next/link";
 export default function ImageList() {
+  // get image data (and error for error handling) via useSWR hook from the next api route
   const { data, error } = useSWR("/api/images");
   if (error) return <div>failed to load</div>;
   if (!data) return <div>loading...</div>;
   return (
     <StyledList>
+      {/* map over our data.resources to get render every image returned*/}
       {data.resources.map((image) => (
         <StyledListItem key={image.asset_id}>
           <Link href={`/images/${image.public_id}`} key={image.asset_id}>
+            {/* wrapping our Next StyledImage in an <a>-Tag is necessary to avoid some next errors 🤷‍♂️*/}
             <a>
               <StyledImage
                 key={image.public_id}
@@ -93,11 +104,11 @@ export default function ImageList() {
                 layout="responsive"
                 height={image.height}
                 width={image.width}
-                style={{ borderRadius: "0.5rem", borderColor: "black" }}
                 alt={`Image-Id: ${image.public_id}`}
               />
             </a>
           </Link>
+          {/*Check for available Tags to display by mapping through the tags array of image, otherwise show nothing or untagged*/}
           <p>
             {image.tags.length > 0 ? (
               image.tags.map((tag, index) => (
@@ -139,36 +150,44 @@ import process from "node:process";
 
 import cloudinary from "cloudinary";
 import formidable from "formidable";
-
+// formidable does not work with the default api settings o Next.js, so we disable the bodyParser via config
 export const config = {
   api: {
     bodyParser: false
   }
 };
-
+// set the cloudinary config to use your environment variables
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_SECRET
 });
-
+// define our async handler function
 export default async function handler(request, response) {
+  // we only look for POST request method
   switch (request.method) {
     case "POST":
+      // we wrap our POST data handling in a Promise to support correct handling of our async method
       await new Promise((resolve, reject) => {
+        // initializing a new (empty) formidable form which we use to
         const form = formidable({});
+        // parse our request in order to get adequate values for our file to upload
         form.parse(request, async (error, fields, files) => {
           if (error) {
+            // in case of error, the promise rejects (resulting in an error catched in our upload form)
             reject(error);
           } else {
+            // formidable offers us a handy way to get the file data exactly how we need it to pass it to the cloudinary upload API
             const { file } = files;
-
+            // newFilename is a temporary filename like e.g. "de49ea6ae2b56c0208f640300"
             const { newFilename, filepath } = file;
+            // finally we call the cloudinary upload API with our values and pass the temporary filename as public_id
             const result = await cloudinary.v2.uploader.upload(filepath, {
               public_id: newFilename
             });
             console.log("API: response from cloudinary: ", result);
             response.status(201).json(result);
+            // As our request is successful, we call the promises' resolve()-method (fulfilling the try block in our upload form handler)
             resolve();
           }
         });
@@ -217,26 +236,33 @@ async function fetcher(...args) {
 ```js
 import React, { useState } from "react";
 import styled from "styled-components";
+// we are using useSWR to mutate the data once a file has been uploaded
 import useSWR from "swr";
 function ImageUploadForm() {
   const { mutate } = useSWR("/api/images/");
-  const [uploadStatus, setUploadStatus] = useState(false);
+  // We define some states to give some feedback to the user what happened to our upload
+  const [uploadStatus, setUploadStatus] = useState("");
   const [error, setError] = useState(undefined);
+  // a kind of 'standard' form handler
   async function submitImage(event) {
     event.preventDefault();
     setUploadStatus("Uploading...");
     const formData = new FormData(event.target);
-
+    // we use fetch to call our API and pass the form data and request method
     try {
       const response = await fetch("/api/upload", {
         method: "post",
         body: formData
       });
+      // once the file is uploaded (= the promise in our api upload is resolved)
       if (response.status === 201) {
+        // we call mutate to refresh our image data
         mutate();
+        // and set a successful state
         setUploadStatus("Upload complete!");
       }
     } catch (error) {
+      // in case of error, we set the state accordingly
       setError(error);
     }
   }
@@ -248,6 +274,7 @@ function ImageUploadForm() {
         <input type="file" name="file" />
         <StyledButton type="submit">Upload</StyledButton>
         <p>{uploadStatus}</p>
+        {/*we use conditional rendering */}
         {error && <p>{error.message}</p>}
       </Form>
     </>
@@ -266,7 +293,7 @@ const StyledButton = styled.button`
 export default ImageUploadForm;
 ```
 
-## Tie all together in your HomePage component
+## Put it all together in your HomePage component
 
 ```js
 import Head from "next/head";
@@ -285,10 +312,10 @@ export default function Home() {
 
       <Main>
         <h1>Cloudinary Demo</h1>
-        <ImageList />
         <StyledUpload>
           <ImageUploadForm />
         </StyledUpload>
+        <ImageList />
       </Main>
     </div>
   );

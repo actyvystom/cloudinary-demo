@@ -14,10 +14,10 @@ export default function Home() {
 
       <Main>
         <h1>Cloudinary Demo</h1>
-        <ImageList />
         <StyledUpload>
           <ImageUploadForm />
         </StyledUpload>
+        <ImageList />
       </Main>
     </div>
   );

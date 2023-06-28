@@ -3,7 +3,7 @@ import styled from "styled-components";
 import useSWR from "swr";
 function ImageUploadForm() {
   const { mutate } = useSWR("/api/images/");
-  const [uploadStatus, setUploadStatus] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [error, setError] = useState(undefined);
   async function submitImage(event) {
     event.preventDefault();
