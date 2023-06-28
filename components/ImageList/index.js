@@ -1,9 +1,7 @@
-import useSWR from "swr";
 import Image from "next/image";
 import styled from "styled-components";
 import Link from "next/link";
-export default function ImageList() {
-  const { data, error } = useSWR("/api/images");
+export default function ImageList({ data, error }) {
   if (error) return <div>failed to load</div>;
   if (!data) return <div>loading...</div>;
   return (

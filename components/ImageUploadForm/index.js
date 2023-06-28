@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import useSWR from "swr";
-function ImageUploadForm() {
-  const { mutate } = useSWR("/api/images");
+
+function ImageUploadForm({ onMutate }) {
   const [uploadStatus, setUploadStatus] = useState("");
   const [error, setError] = useState(undefined);
   async function submitImage(event) {
@@ -16,7 +15,7 @@ function ImageUploadForm() {
         body: formData
       });
       if (response.status === 201) {
-        mutate();
+        onMutate();
         setUploadStatus("Upload complete!");
       }
     } catch (error) {

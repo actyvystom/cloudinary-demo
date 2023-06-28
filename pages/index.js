@@ -2,7 +2,9 @@ import Head from "next/head";
 import styled from "styled-components";
 import ImageList from "../components/ImageList";
 import ImageUploadForm from "../components/ImageUploadForm";
+import useSWR from "swr";
 export default function Home() {
+  const { data, error, mutate } = useSWR("/api/images");
   return (
     <div>
       <Head>
@@ -14,9 +16,9 @@ export default function Home() {
       <Main>
         <h1>Cloudinary Demo</h1>
         <StyledUpload>
-          <ImageUploadForm />
+          <ImageUploadForm onMutate={mutate} />
         </StyledUpload>
-        <ImageList />
+        <ImageList data={data} error={error} />
       </Main>
     </div>
   );
