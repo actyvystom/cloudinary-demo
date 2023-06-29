@@ -1,7 +1,9 @@
 import Image from "next/image";
 import styled from "styled-components";
 import Link from "next/link";
-export default function ImageList({ data, error }) {
+import useSWR from "swr";
+export default function ImageList() {
+  const { data, error } = useSWR("/api/images");
   if (error) return <div>failed to load</div>;
   if (!data) return <div>loading...</div>;
   return (
@@ -36,6 +38,7 @@ export const StyledTag = styled.span`
   background-color: #ddd;
   border-radius: 0.5rem;
   padding: 0.25rem 0.5rem;
+  margin: 0rem 0.25rem 0rem 0.25rem;
 `;
 const StyledList = styled.ul`
   list-style: none;

@@ -22,9 +22,9 @@ images: {
 
 ### Needed npm packages
 
-- Install the following npm packages (formidable version number is important!):
+- Install the following npm packages:
 
-`npm i cloudinary formidable@2.0.1 swr`
+`npm i cloudinary formidable swr`
 
 ## API GET route for images
 
@@ -98,17 +98,13 @@ export default function ImageList() {
       {data.resources.map((image) => (
         <StyledListItem key={image.asset_id}>
           <Link href={`/images/${image.public_id}`} key={image.asset_id}>
-            {/* wrapping our Next StyledImage in an <a>-Tag is necessary to avoid some next errors 🤷‍♂️*/}
-            <a>
-              <StyledImage
-                key={image.public_id}
-                src={image.url}
-                layout="responsive"
-                height={image.height}
-                width={image.width}
-                alt={`Image-Id: ${image.public_id}`}
-              />
-            </a>
+            <StyledImage
+              key={image.public_id}
+              src={image.url}
+              height={image.height}
+              width={image.width}
+              alt={`Image-Id: ${image.public_id}`}
+            />
           </Link>
           {/*Check for available Tags to display by mapping through the tags array of image, otherwise show nothing or untagged*/}
           <p>
@@ -141,6 +137,9 @@ const StyledListItem = styled.li`
 `;
 const StyledImage = styled(Image)`
   border-radius: 0.5rem;
+  width: 90vw;
+  object-fit: contain;
+  height: auto;
   border-color: aliceblue;
 `;
 ```
@@ -166,11 +165,11 @@ cloudinary.config({
 });
 // define our async handler function - simplified :)
 export default async function handler(req, res) {
-  // we check for POST, all methods return 405
+  // we check for POST, all other methods return 405
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-
+  // initialize formidable
   const form = formidable({});
   // using formidables' parse method to get a simple access to the file data
   form.parse(req, async (error, fields, files) => {
@@ -184,7 +183,9 @@ export default async function handler(req, res) {
     const { newFilename, filepath } = file[0];
     // call our cloudinary uploader with the required arguments
     const result = await cloudinary.v2.uploader.upload(filepath, {
-      public_id: newFilename
+      public_id: newFilename,
+      // OPTIONAL: if you want to add tags for your file, add another input field to your form and pass the values here like e.g.
+        tags: ["some", "example", "tag]
     });
     console.log("API: response from cloudinary: ", result);
     // return our just uploaded image result from cloudinary upload
@@ -198,7 +199,6 @@ export default async function handler(req, res) {
 ```js
 import { SWRConfig } from "swr";
 
-// const fetcher = (...args) => fetch(...args).then((res) => res.json());
 async function fetcher(...args) {
   try {
     const response = await fetch(...args);

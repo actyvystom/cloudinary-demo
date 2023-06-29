@@ -15,12 +15,11 @@ export default function ImageDetail() {
     const uploadDate = new Date(image.uploaded_at);
     return (
       <StyledSection>
-        <Image
+        <StyledImage
           key={image.public_id}
           src={image.url}
           width={image.width}
           height={image.height}
-          layout="responsive"
           priority={true}
           alt={`Image-Id: ${image.public_id}`}
         />
@@ -48,9 +47,24 @@ export default function ImageDetail() {
   }
 }
 const StyledSection = styled.section`
-  width: 95vw;
+  display: flex;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #ccc;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  width: 100vw;
   height: auto;
 `;
 const StyledDescription = styled.p`
   font-size: 0.8rem;
+`;
+const StyledImage = styled(Image)`
+  margin: 0.5rem;
+  border-radius: 0.5rem;
+  width: 90vw;
+  object-fit: contain;
+  height: auto;
+  border-color: aliceblue;
 `;
