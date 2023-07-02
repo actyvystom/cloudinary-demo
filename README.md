@@ -146,6 +146,8 @@ const StyledImage = styled(Image)`
 
 ## Setting up an upload API route
 
+- Add a new API route `api/upload.js` and add the following handler:
+
 ```js
 import process from "node:process";
 
